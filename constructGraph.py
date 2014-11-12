@@ -10,8 +10,6 @@ name = "amazon-meta.txt"
 name = '/'+name
 f = open(path+name, 'r')
 
-#~ str = "similar: 5 1559360968 1559361247 1559360828 1559361018 0743214552"
-#~ print(map(int,str.split(':')[-1].split()[1:]))
 def find_in_line(exp,line,found) :
 	if exp in line[0] and found:
 		return line[0].split(exp),True
@@ -87,11 +85,7 @@ class MyNode
 		found = True
 		#~ print self.ASIN
 		self.title,found,line = extract_attrib('title:',file,found,"")
-		#~ if  'discontinued product' in self.title  :
-			#~ return
-		#~ else :
 		#~ print self.title
-		#~ print found
 		self.group,found,line  = extract_attrib('group:',file,found,line)
 		#~ print self.group
 		self.salesrank,found,line  = extract_attrib('salesrank:',file,found,line)
@@ -102,8 +96,8 @@ class MyNode
 			self.categories = Categories(file)
 			self.reviews = Reviews(file)
 			#~ file.readline()
-		#~ for re in self.reviews.reviews :
-			#~ print re.date
+			#~ for re in self.reviews.reviews :
+				#~ print re.date
 for i in range(1) : #remove the first useless lines
 	f.readline()
 a = []
