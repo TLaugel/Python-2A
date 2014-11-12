@@ -12,14 +12,29 @@ f = open(path+name, 'r')
 
 #~ str = "similar: 5 1559360968 1559361247 1559360828 1559361018 0743214552"
 #~ print(map(int,str.split(':')[-1].split()[1:]))
+def find_in_line(exp,line,found) :
+	if exp in line[0] and found:
+		return line[0].split(exp),True
+	else :
+		return line,False
+		
+def extract_attrib(attribute,file,found,line) :
+	if found :
+		line = file.readline()
+	if attribute in line:
+		return line.split('group:')[-1],True,line
+	else :
+		return [],False,line
+
 class Reviews : #all reviews
 	def __init__ (self,file):
-		line = file.readline().replace('\n','').replace('\r','')
-		line = line.split('avg rating:')
+		line = [file.readline().replace('\n','').replace('\r','')]
+		found = True
+		line,found = find_in_line('avg rating:',line,found)
 		self.avgRating = float(line[-1])
-		line = line[0].split('downloaded:')
+		line,found  = find_in_line('downloaded:',line,found )
 		self.dowloaded = int(line[-1])
-		line = line[0].split('total:')
+		line,found  = find_in_line('total:',line,found )
 		self.nb = int(line[-1])
 		self.reviews = []
 		for i in range(self.dowloaded) :
@@ -27,17 +42,18 @@ class Reviews : #all reviews
 			self.reviews.append(Review(line))
 class Review : #one single review
 	def __init__(self,line) :
-		line = line.split('helpful:')
-		#~ print(line[-1])
+		line = [line]
+		found = True
+		line,found = find_in_line('helpful:',line,found )
 		self.helpful = int(line[-1])
 		
-		line = line[0].split('votes:')
+		line,found = find_in_line('votes:',line,found )
 		self.votes = int(line[-1])
 		
-		line = line[0].split('rating:')
+		line,found = find_in_line('rating:',line,found )
 		self.rating = int(line[-1])
 		
-		line = line[0].split('cutomer:')
+		line,found = find_in_line('cutomer:',line,found )
 		self.customer = line[-1]
 		
 		self.date = line[0].replace(' ','')
@@ -59,29 +75,36 @@ class Similars : #all similar product
 		for i in range(self.number):
 			self.similar.append(splitted[i+1])
 		
-class MyNode :
+class MyNode 
 	def __init__(self,file) :
-		self.Id  = int(file.readline().split(':')[-1])
-		#~ print self.Id
-		self.ASIN = file.readline().split(':')[-1]
+		line = file.readline().replace('\r','').replace('\n','').replace(' ','')
+		if line == '' :
+			line = file.readline().replace('\r','').replace('\n','').replace(' ','')
+		self.Id  = int(line.split(':')[-1])
+		print self.Id
+		self.ASIN = file.readline().split(':')[-1].replace('\r','').replace('\n','')
 		#~ print self.ASIN
-		self.title = file.readline().split('title:')[-1]
-		if  'discontinued product' in self.title  :
-			return
-		else :
-			#~ print self.title
-			self.group = file.readline().split('group:')[-1]
-			#~ print self.group
-			self.salesrank = file.readline().split('salesrank:')[-1]
-			#~ print self.salesrank
+		found = True
+		#~ print self.ASIN
+		self.title,found,line = extract_attrib('title:',file,found,"")
+		#~ if  'discontinued product' in self.title  :
+			#~ return
+		#~ else :
+		#~ print self.title
+		#~ print found
+		self.group,found,line  = extract_attrib('group:',file,found,line)
+		#~ print self.group
+		self.salesrank,found,line  = extract_attrib('salesrank:',file,found,line)
+		#~ print self.salesrank
+		if found:
 			self.similars = Similars(file.readline())
 			#~ print self.similar.similar
 			self.categories = Categories(file)
 			self.reviews = Reviews(file)
-			file.readline()
+			#~ file.readline()
 		#~ for re in self.reviews.reviews :
 			#~ print re.date
-for i in range(7) : #remove the first useless lines
+for i in range(1) : #remove the first useless lines
 	f.readline()
 a = []
 while(1) :
