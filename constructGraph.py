@@ -115,90 +115,113 @@ class Similars : #all similar product
 		
 class MyNode :
 	def __init__(self,file) :
-		#~ print "begin init"
 		line = file.readline().replace('\r','').replace('\n','').replace(' ','')
 		if line == '' :
 			line = file.readline().replace('\r','').replace('\n','').replace(' ','')
 		self.Id  = int(line.split(':')[-1])
-		print self.Id
+		if self.Id% 10000 == 0 :
+			print self.Id
 		self.ASIN = file.readline().split(':')[-1].replace('\r','').replace('\n','')
-		#~ print self.ASIN
 		found = True
-		#~ print self.ASIN
-		self.title,found,line = extract_attrib('title:',file,found,"")
-		#~ print found
-		#~ print self.title
-		self.group,found,line  = extract_attrib('group:',file,found,line)
-		#~ print self.group
-		self.salesrank,found,line  = extract_attrib('salesrank:',file,found,line)
-		#~ print self.salesrank
+		#~ self.title,found,line = extract_attrib('title:',file,found,"")
+		title,found,line = extract_attrib('title:',file,found,"")
+		#~ self.group,found,line  = extract_attrib('group:',file,found,line)
+		group,found,line  = extract_attrib('group:',file,found,line)
+		#~ self.salesrank,found,line  = extract_attrib('salesrank:',file,found,line)
+		salesrank,found,line  = extract_attrib('salesrank:',file,found,line)
 		self.similars = Similars(file,found)
-		self.categories = CategoriesTrees(file,found)
-		self.reviews = Reviews(file,found)
-		#~ print "end init : ", self.Id
+		#~ self.categories = CategoriesTrees(file,found)
+		categories = CategoriesTrees(file,found)
+		#~ self.reviews = Reviews(file,found)
+		reviews = Reviews(file,found)
+		
+	def AddEdgeProduct(self,graph,idProd) : #add the edges corresponding to similar products
+		print self.Id
+		for simProd in self.similars.similar :
+			if simProd in idProd:
+				graph.AddEdge(self.Id,idProd[simProd].Id)
+				print "I have one !"
+			else :
+				print simProd
 		
 
-for i in range(2) : #remove the first useless lines
-	f.readline()
-a = []
-i = 0
-while(1) :
-	try :
-		a = MyNode(f)
-		i+=1
-		#~ if len(a.categories.categoriesTree) > 0 :
-			#~ if(a.categories.categoriesTree[0].categories) > 0 :
-				#~ print a.categories.categoriesTree[0].categories[0].number
-	except :
-		break
-f.close()
-print i
-		
-#~ id = 0
-#~ G1 = TNEANet.New()
-#~ dic = {}
-#~ intId = 1
-#~ idNode = intId
-#~ for line in f:
-	#~ line = line.replace('\r','').replace('\n','')
-	#~ if line[0:4] == 'ASIN' :
-		#~ id = line.split(':')[-1]
-		#~ if not(id in dic):
-			#~ dic[id] = intId
-			#~ G1.AddNode(intId)
-			#~ intId += 1
-		#~ idNode = dic[id]
-	#~ if(line[0:9] ==  "  similar"):
+if __name__  == '__main__' :
+	
+	for i in range(2) : #remove the first useless lines
+		f.readline()
+	a = []
+	i = 0
+	#~ while(1) :
 		#~ try :
-			#~ def addEdge(x):
-				#~ if not(x in dic):
-					#~ global intId
-					#~ dic[x] = intId
-					#~ G1.AddNode(intId)
-					#~ intId +=  1
-				#~ G1.AddEdge(idNode,dic[x] )
-			#~ li = line.split(':')[-1].split()[1:]
-			#~ map(addEdge,line.split(':')[-1].split()[1:])			
+			#~ a = MyNode(f)
+			#~ i+=1
+			#~ #if len(a.categories.categoriesTree) > 0 :
+				#~ #if(a.categories.categoriesTree[0].categories) > 0 :
+					#~ #print a.categories.categoriesTree[0].categories[0].number
 		#~ except :
-			#~ pass
+			#~ break
+	#~ f.close()
+	#~ print i
 			
-#~ counter = 0
-#~ ff = open(path+name, 'r')
-#~ out = open(path+"/first100", 'w')
-#~ for line in ff:
-	#~ out.write(line)
-	#~ if(counter > 5000) :
-		#~ break
-	#~ counter += 1
-#~ ff.close()
-#~ out.close()
-#~ print G1.GetNodes()
-#~ print G1.GetEdges()
+	id = 0
+	G1 = snap.TNEANet.New()
+	IdProd= {}
+	while 1 :
+		try :
+			 a = MyNode(f)
+			 ASIN = a.ASIN
+			 IdProd[ASIN] = a
+		except :
+			break
+	#adding the node
+	for el in IdProd :
+		G1.AddNode(IdProd[el].Id)
+	for el in IdProd :
+		IdProd[el].AddEdgeProduct(G1,IdProd)
+	
+	
+	#~ intId = 1
+	#~ idNode = intId
+	#~ for line in f:
+		#~ line = line.replace('\r','').replace('\n','')
+		#~ if line[0:4] == 'ASIN' :
+			#~ id = line.split(':')[-1]
+			#~ if not(id in dic):
+				#~ dic[id] = intId
+				#~ G1.AddNode(intId)
+				#~ intId += 1
+			#~ idNode = dic[id]
+		#~ if(line[0:9] ==  "  similar"):
+			#~ try :
+				#~ def addEdge(x):
+					#~ if not(x in dic):
+						#~ global intId
+						#~ dic[x] = intId
+						#~ G1.AddNode(intId)
+						#~ intId +=  1
+					#~ G1.AddEdge(idNode,dic[x] )
+				#~ li = line.split(':')[-1].split()[1:]
+				#~ map(addEdge,line.split(':')[-1].split()[1:])			
+			#~ except :
+				#~ pass
+				
+	#~ counter = 0
+	#~ ff = open(path+name, 'r')
+	#~ out = open(path+"/first100", 'w')
+	#~ for line in ff:
+		#~ out.write(line)
+		#~ if(counter > 5000) :
+			#~ break
+		#~ counter += 1
+	#~ ff.close()
+	#~ out.close()
+	#~ print G1.GetNodes()
+	#~ print G1.GetEdges()
 
 
 
-#~ out.close()
-#http://snap.stanford.edu/snappy/doc/reference/graphs.html#TNEANet for more informations
+	#~ out.close()
+	#http://snap.stanford.edu/snappy/doc/reference/graphs.html#TNEANet for more informations
 
 
 
@@ -215,29 +238,29 @@ print i
 
 
 
-#~ FIn = TFIn(path+name)
-#~ G = TNGraph.Load(FIn)
-#~ for NI in G.Nodes():
-	#~ print "node id %d with out-degree %d and in-degree %d" % ( NI.GetId(), NI.GetOutDeg(), NI.GetInDeg())
+	#~ FIn = TFIn(path+name)
+	#~ G = TNGraph.Load(FIn)
+	#~ for NI in G.Nodes():
+		#~ print "node id %d with out-degree %d and in-degree %d" % ( NI.GetId(), NI.GetOutDeg(), NI.GetInDeg())
 
 
 
-#~ CntV = TIntPrV()
-#~ # generate a Preferential Attachment graph on 1000 nodes and node out degree of 3
-#~ G8 = GenPrefAttach(1000, 3)
-#~ # vector of pairs of integers (size, count)
-#~ CntV = TIntPrV()
-#~ # get distribution of connected components (component size, count)
-#~ print GetWccSzCnt(FIn, CntV) 
-#~ # get degree distribution pairs (degree, count)
-#~ print GetOutDegCnt(FIn, CntV)
-#~ # vector of floats 
-#~ EigV = TFltV() 
-#~ # get first eigenvector of graph adjacency matrix 
-#~ print GetEigVec(FIn, EigV) 
-#~ # get diameter of FIn 
-#~ print GetBfsFullDiam(FIn, 100) 
-#~ # count the number of triads in FIn, get the clustering coefficient of FIn 
-#~ print GetTriads(FIn) 
-#~ print GetClustCf(FIn)
-#~ print("succcess")
+	#~ CntV = TIntPrV()
+	#~ # generate a Preferential Attachment graph on 1000 nodes and node out degree of 3
+	#~ G8 = GenPrefAttach(1000, 3)
+	#~ # vector of pairs of integers (size, count)
+	#~ CntV = TIntPrV()
+	#~ # get distribution of connected components (component size, count)
+	#~ print GetWccSzCnt(FIn, CntV) 
+	#~ # get degree distribution pairs (degree, count)
+	#~ print GetOutDegCnt(FIn, CntV)
+	#~ # vector of floats 
+	#~ EigV = TFltV() 
+	#~ # get first eigenvector of graph adjacency matrix 
+	#~ print GetEigVec(FIn, EigV) 
+	#~ # get diameter of FIn 
+	#~ print GetBfsFullDiam(FIn, 100) 
+	#~ # count the number of triads in FIn, get the clustering coefficient of FIn 
+	#~ print GetTriads(FIn) 
+	#~ print GetClustCf(FIn)
+	#~ print("succcess")
