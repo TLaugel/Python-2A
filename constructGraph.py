@@ -1,7 +1,7 @@
  #-*- coding: utf-8 -*-
 import functools
 import os
-from snap import *
+import snap
 import linecache
 path = os.getcwd()
 def add(x,y): return x+'/'+y
@@ -11,6 +11,9 @@ name = '/'+name
 f = open(path+name, 'r')
 
 def find_in_line(exp,line,found) :
+	#~ print exp
+	#~ print line[0]
+	#~ print exp in line[0]
 	if exp in line[0] and found:
 		return line[0].split(exp),True
 	else :
@@ -19,25 +22,12 @@ def find_in_line(exp,line,found) :
 def extract_attrib(attribute,file,found,line) :
 	if found :
 		line = file.readline()
+		#~ print line
 	if attribute in line:
-		return line.split('group:')[-1],True,line
+		return line.split(attribute)[-1],True,line
 	else :
 		return [],False,line
-
-class Reviews : #all reviews
-	def __init__ (self,file):
-		line = [file.readline().replace('\n','').replace('\r','')]
-		found = True
-		line,found = find_in_line('avg rating:',line,found)
-		self.avgRating = float(line[-1])
-		line,found  = find_in_line('downloaded:',line,found )
-		self.dowloaded = int(line[-1])
-		line,found  = find_in_line('total:',line,found )
-		self.nb = int(line[-1])
-		self.reviews = []
-		for i in range(self.dowloaded) :
-			line = file.readline()
-			self.reviews.append(Review(line))
+		
 class Review : #one single review
 	def __init__(self,line) :
 		line = [line]
@@ -53,28 +43,79 @@ class Review : #one single review
 		
 		line,found = find_in_line('cutomer:',line,found )
 		self.customer = line[-1]
-		
 		self.date = line[0].replace(' ','')
-class Categories : #all categories
-	def __init__(self,file):
-		nb = int(file.readline().split(':')[-1])
-		self.categories = []
-		for i in range(nb):
-			line  = file.readline()
-			self.categories.append(Categorie(line))
+class Reviews : #all reviews
+	def __init__ (self,file,bool):
+		line = [file.readline().replace('\n','').replace('\r','')]
+		found = bool
+		line,found = find_in_line('avg rating:',line,found)
+		if found :
+			self.avgRating = float(line[-1])
+		else :
+			self.avgRating = -1.0
+		line,found  = find_in_line('downloaded:',line,found )
+		if found: 
+			self.downloaded = int(line[-1])
+		else :
+			self.downloaded = 0
+		line,found  = find_in_line('total:',line,found )
+		if found :
+			self.nb = int(line[-1])
+		else :
+			self.nb = 0
+		self.reviews = []
+		for i in range(self.downloaded) :
+			line = file.readline()
+			self.reviews.append(Review(line))
+			
 class Categorie : #one single categorie
 	def __init__(self,line):
-		self.line = line
-class Similars : #all similar product
+		#~ print line
+		test = line.split('[')
+		if len(test) == 2 :
+			self.name = test[0]
+		else :
+			self.name = functools.reduce(self.remerge,test[:-1])
+			#~ print line.split('[')[1].replace(']','')
+		self.number = int(test[-1].replace(']',''))
+	def remerge(self,str1,str2) :
+		return str1+'['+str2
+class CategorieTree : #one single categorie tree
 	def __init__(self,line):
-		splitted = line.replace('\n','').replace('\r','').split('similar:')[-1].split('  ')
-		self.number = int(splitted[0])
-		self.similar = []
-		for i in range(self.number):
-			self.similar.append(splitted[i+1])
+		#~ print line
+		cats  = line.split('|')[1:]
+		self.categories = []
+		for cat in cats :
+			self.categories.append(Categorie(cat))		
+class CategoriesTrees : #all the categorie trees
+	def __init__(self,file,bool):
+		if bool :
+			line = file.readline().replace('\r','').replace('\n','').replace(' ','')
+			nb = int(line.split(':')[-1])
+			self.categoriesTree = []
+			for i in range(nb):
+				line  = file.readline().replace('\r','').replace('\n','').replace(' ','')
+				self.categoriesTree.append(CategorieTree(line))
+		else :
+			nb = 0
+			self.categoriesTree = []
+class Similars : #all similar product
+	def __init__(self,file,found):
+		if found :
+			line = file.readline()
+			splitted = line.replace('\n','').replace('\r','').split('similar:')[-1].split('  ')
+			#~ print splitted
+			self.number = int(splitted[0])
+			self.similar = []
+			for i in range(self.number):
+				self.similar.append(splitted[i+1])
+		else :
+			self.number = 0
+			self.similar = []
 		
-class MyNode 
+class MyNode :
 	def __init__(self,file) :
+		#~ print "begin init"
 		line = file.readline().replace('\r','').replace('\n','').replace(' ','')
 		if line == '' :
 			line = file.readline().replace('\r','').replace('\n','').replace(' ','')
@@ -85,30 +126,36 @@ class MyNode
 		found = True
 		#~ print self.ASIN
 		self.title,found,line = extract_attrib('title:',file,found,"")
+		#~ print found
 		#~ print self.title
 		self.group,found,line  = extract_attrib('group:',file,found,line)
 		#~ print self.group
 		self.salesrank,found,line  = extract_attrib('salesrank:',file,found,line)
 		#~ print self.salesrank
-		if found:
-			self.similars = Similars(file.readline())
-			#~ print self.similar.similar
-			self.categories = Categories(file)
-			self.reviews = Reviews(file)
-			#~ file.readline()
-			#~ for re in self.reviews.reviews :
-				#~ print re.date
-for i in range(1) : #remove the first useless lines
+		self.similars = Similars(file,found)
+		self.categories = CategoriesTrees(file,found)
+		self.reviews = Reviews(file,found)
+		#~ print "end init : ", self.Id
+		
+
+for i in range(2) : #remove the first useless lines
 	f.readline()
 a = []
+i = 0
 while(1) :
-	#~ try :
-		a.append(MyNode(f))
-	#~ except :
-		#~ break
+	try :
+		a = MyNode(f)
+		i+=1
+		#~ if len(a.categories.categoriesTree) > 0 :
+			#~ if(a.categories.categoriesTree[0].categories) > 0 :
+				#~ print a.categories.categoriesTree[0].categories[0].number
+	except :
+		break
+f.close()
+print i
 		
 #~ id = 0
-G1 = TNEANet.New()
+#~ G1 = TNEANet.New()
 #~ dic = {}
 #~ intId = 1
 #~ idNode = intId
@@ -134,20 +181,21 @@ G1 = TNEANet.New()
 			#~ map(addEdge,line.split(':')[-1].split()[1:])			
 		#~ except :
 			#~ pass
-counter = 0
-ff = open(path+name, 'r')
-out = open(path+"/first100", 'w')
-for line in ff:
-	out.write(line)
-	if(counter > 5000) :
-		break
-	counter += 1
-ff.close()
-out.close()
-print G1.GetNodes()
-print G1.GetEdges()
+			
+#~ counter = 0
+#~ ff = open(path+name, 'r')
+#~ out = open(path+"/first100", 'w')
+#~ for line in ff:
+	#~ out.write(line)
+	#~ if(counter > 5000) :
+		#~ break
+	#~ counter += 1
+#~ ff.close()
+#~ out.close()
+#~ print G1.GetNodes()
+#~ print G1.GetEdges()
 
-f.close()
+
 
 #~ out.close()
 #http://snap.stanford.edu/snappy/doc/reference/graphs.html#TNEANet for more informations
