@@ -14,9 +14,6 @@ name = "amazon-meta.txt"
 name = '/'+name
 f = open(path+name, 'r')
 def find_in_line(exp,line,found) :
-	#~ print exp
-	#~ print line[0]
-	#~ print exp in line[0]
 	if exp in line[0] and found:
 		return line[0].split(exp),True
 	else :
@@ -24,8 +21,7 @@ def find_in_line(exp,line,found) :
 		
 def extract_attrib(attribute,file,found,line) :
 	if found :
-		line = file.readline()
-		#~ print line
+		line =  re.sub(repl,'',file.readline())
 	if attribute in line:
 		return line.split(attribute)[-1],True,line
 	else :
@@ -75,7 +71,6 @@ class Reviews : #all reviews
 			
 class Categorie : #one single categorie
 	def __init__(self,line):
-		#~ print line
 		test = line.split('[')
 		if len(test) == 2 :
 			self.name = test[0]
@@ -108,7 +103,7 @@ class CategoriesTrees : #all the categorie trees
 class Similars : #all similar product
 	def __init__(self,file,found):
 		if found :
-			line = file.readline()
+			line = file.readline() #it is normal that there is no re.sub(repl,'',file.readline())
 			splitted = line.replace('\n','').replace('\r','').split('similar:')[-1].split('  ')
 			self.number = int(splitted[0])
 			self.similar = [] #list of ASIN

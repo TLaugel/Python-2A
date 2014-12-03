@@ -66,7 +66,7 @@ if __name__  == '__main__' :
 		except :
 			break
 	
-	#adding the node
+	#adding the nodes
 	for product in IdProd :
 		GraphSim.AddNode(IdProd[product].Id)
 		GraphBipartiteProdPeople.AddNode(2*IdProd[product].Id)
@@ -78,10 +78,11 @@ if __name__  == '__main__' :
 		
 	print GraphSim.GetNodes()
 	print GraphSim.GetEdges()
-	FOut = snap.TFOut("GraphSimProduct.graph") #define by the similarity between products
-	GraphSim.Save(FOut)
-	FOut.Flush()
+	print GraphBipartiteProdPeople.GetEdges()
+	#~ FOut = snap.TFOut("GraphSimProduct.graph") #define by the similarity between products
+	#~ GraphSim.Save(FOut)
+	#~ FOut.Flush()
 	
-	FOut = snap.TFOut("GraphBipartite.graph") #define by the similarity between products
-	GraphBipartiteProdPeople.Save(FOut)
-	FOut.Flush()
+	#~ FOut = snap.TFOut("GraphBipartite.graph") #define by the similarity between products
+	#~ GraphBipartiteProdPeople.Save(FOut)
+	#~ FOut.Flush()
