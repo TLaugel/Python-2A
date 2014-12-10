@@ -2,7 +2,7 @@ import functools
 import os
 import linecache
 import re
-from constructDataBase import sepMain,sep2,sep3
+from constructDataBase_FromInitData import sepMain,sep2,sep3
 finalSep = ';'
 path = os.getcwd()
 
