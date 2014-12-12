@@ -16,7 +16,7 @@ path = '/'.join(path.split('/')[:-1])+'/'
 #~ Eighth = set()
 #~ Nineth = set()
 #~ dicSec = {0:First,1:Second,2:Third,3:Fourth,4:Fifth,5:Sixth,6:Seventh,7:Eighth,8:Nineth}
-
+nameOut = "sortedDataBase.txt"
 primaryCat = ['3375251', '283155', '5174', '3489201', '229220', '139452', '1064952', '265523', '171280', '172282', '229534', '540744', '468642', '700060']
 dicPrimaryCatSeen_Ref = {}
 if __name__ == "__main__" :
@@ -25,7 +25,6 @@ if __name__ == "__main__" :
 	print "execution of "+command
 	os.system(command)
 	print "now we can work properly"
-	name = "sortedDataBase.txt"
 	fIn = open(path+name,'r')
 	fOut = open(path+'sortedDataBaseWithCust.txt','w')
 	for el in primaryCat :

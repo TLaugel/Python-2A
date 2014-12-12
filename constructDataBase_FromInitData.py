@@ -49,7 +49,6 @@ class MyProductSave():
 			res += salesRank+sepMain
 			res += similarProduct+sepMain
 			res += categories
-			#~ print(res)
 			fileOut.write(res+'\r\n')
 		
 		
