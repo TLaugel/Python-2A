@@ -9,10 +9,10 @@ path = os.getcwd()
 repl = '\s*'
 def add(x,y): return x+'/'+y
 
-path = functools.reduce(add,path.split('/')[:-1])
-name = "amazon-meta.txt"
-name = '/'+name
-f = open(path+name, 'r')
+#~ path = functools.reduce(add,path.split('/')[:-1])
+#~ name = "amazon-meta.txt"
+#~ name = '/'+name
+#~ f = open(path+name, 'r')
 def find_in_line(exp,line,found) :
 	if exp in line[0] and found:
 		return line[0].split(exp),True

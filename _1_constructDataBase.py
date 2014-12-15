@@ -2,11 +2,16 @@ import functools
 import os
 import linecache
 import re
+import gzip
+#~ f = gzip.open('file.txt.gz', 'rb')
+#~ file_content = f.read()
+#~ f.close()
 from parser import *
 path = os.getcwd()
 
 path = functools.reduce(add,path.split('/')[:-1])+'/'
-name = "amazon-meta.txt"
+nameIn = "amazon-meta.txt.gz"
+nameOut = "unorderedDatabase.txt"
 
 sepMain  = '@'
 sep2 = '^'
@@ -53,8 +58,8 @@ class MyProductSave():
 		
 		
 if __name__ == "__main__" :
-	fileIn = open(path+name, 'r')
-	fileOut = open(path+'unorderedDatabase.txt','w')
+	fileIn = gzip.open(path+nameIn, 'r')
+	fileOut = open(path+nameOut,'w')
 	for i in range(2) : #remove the first useless lines
 		fileIn.readline()
 	i = 0
@@ -64,6 +69,6 @@ if __name__ == "__main__" :
 			a = MyProductSave(fileIn,fileOut)
 		except :
 			break
-	#~ print i
+
 	fileIn.close()
 	fileOut.close()

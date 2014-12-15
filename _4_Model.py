@@ -15,11 +15,11 @@ explanatoryVariables = ["avgRating", "wAvgRating", "nbReview", "salesrank", "cat
 #amelioration : faire une PCA par exemple :-) avant la Logit
 #separer la classe '1' en classes '4' et classes '5' -> pb : on ne pourrait plus faire de courbe ROC : il faudrait reagreger les resultats
 
-from GetFinalDB import finalSep
-from constructUserIded import primaryCat
+from _3_ExtractProperInfo import finalSep
+from _2_CleanDataBase import primaryCat
 
 if __name__ == "__main__" :
-	con = sqlite3.connect('../FinalSimpleDB.db3')
+	con = sqlite3.connect('../FinalDataBase.db3')
 	#~ commandGen = """CREATE INDEX indDate ON DbSql(date);"""
 	#~ con.execute(commandGen)
 	#1998
@@ -115,6 +115,9 @@ if __name__ == "__main__" :
 		pl.savefig("img/Roc_Curve_%d" % year,format = "pdf",figsize=(11.69,8.27)) 
 		pl.close()
 		
+		del fprRF, tprRF, thresholdsRF
+		del fprLogit, tprLogit, thresholdsLogit
+		del fprNB, tprNB, thresholdsNB 
 		del randomForest
 		del Logit
 		del NaiveBayes
@@ -126,6 +129,6 @@ if __name__ == "__main__" :
 		del probas_NB
 		dfTrain.drop([name for name in dfTrain], axis=1, inplace=True)
 		dfTest.drop([name for name in dfTest], axis=1, inplace=True)
-		#~ break
+		break
 	con.close()
 	

@@ -2,31 +2,23 @@ import functools
 import os
 import linecache
 import re
-from constructDataBase import sepMain,sep2,sep3
-path = os.getcwd()
+import gzip
+from _1_constructDataBase import sepMain,sep2,sep3,nameOut,path
 
-path = '/'.join(path.split('/')[:-1])+'/'
-#~ First = set()
-#~ Second = set()
-#~ Third = set()
-#~ Fourth = set()
-#~ Fifth = set()
-#~ Sixth = set()
-#~ Seventh = set()
-#~ Eighth = set()
-#~ Nineth = set()
-#~ dicSec = {0:First,1:Second,2:Third,3:Fourth,4:Fifth,5:Sixth,6:Seventh,7:Eighth,8:Nineth}
-nameOut = "sortedDataBase.txt"
+nameIn = nameOut
+nameAux = "sortedDataBase.txt"
+nameOut = "sortedDataBaseWithCust.txt.gz"
+
 primaryCat = ['3375251', '283155', '5174', '3489201', '229220', '139452', '1064952', '265523', '171280', '172282', '229534', '540744', '468642', '700060']
 dicPrimaryCatSeen_Ref = {}
 if __name__ == "__main__" :
 	import subprocess
-	command = "sort -t '@' %PATH%unorderedDatabase.txt -o %PATH%sortedDataBase.txt".replace("%PATH%",path)
+	command = "sort -t '%SEPCOL%' %PATHIn% -o %PATHAux%".replace("%PATHIn%",path+nameIn).replace("%PATHAux%",path+nameAux).replace("%SEPCOL%",sepMain)
 	print "execution of "+command
 	os.system(command)
 	print "now we can work properly"
-	fIn = open(path+name,'r')
-	fOut = open(path+'sortedDataBaseWithCust.txt','w')
+	fIn = open(path+nameAux,'r')
+	fOut = gzip.open(path+nameOut,'w')
 	for el in primaryCat :
 		dicPrimaryCatSeen_Ref[el] = 0
 	li_prod_customer = []

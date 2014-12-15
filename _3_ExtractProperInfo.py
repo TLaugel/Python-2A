@@ -2,18 +2,19 @@ import functools
 import os
 import linecache
 import re
-from constructDataBase_FromInitData import sepMain,sep2,sep3
-from constructUserIded import nameOut
+import gzip
+
+from _1_constructDataBase import sepMain,sep2,sep3,path
+from _2_CleanDataBase import nameOut
 finalSep = ';'
-path = os.getcwd()
-
-path = '/'.join(path.split('/')[:-1])+'/'
-
 nameIn = nameOut
-nameOut = "FinalSimpleDB.txt"
+nameOut = "FinalDB.txt"
+eolEncoding = '\n'
+
 if __name__ == "__main__" :
-	fIn = open(path+nameIn,'r')
+	fIn = gzip.open(path+nameIn,'r')
 	fOut = open(path+nameOut,'w')
+	print "dealing with the input"
 	for line in fIn :
 		line = line.replace('\r\n','')
 		li = line.split(sepMain)
@@ -24,6 +25,9 @@ if __name__ == "__main__" :
 		res += [li[4],li[6],li[5],li[8],li[7]] #avgrating, weighted avg rating,nb review,  nb helpful,salesrank 
 		#add customer info
 		res += li[11:]
-		fOut.write(finalSep.join(res)+'\r\n')
+		fOut.write(finalSep.join(res)+eolEncoding)
 	fIn.close()
 	fOut.close()
+	command = "sqlite3 < myScriptToConvert.script "
+	print "create the sqlite database"
+	os.system(command)
