@@ -18,6 +18,20 @@ explanatoryVariables = ["avgRating", "wAvgRating", "nbReview", "salesrank", "cat
 from _3_ExtractProperInfo import finalSep
 from _2_CleanDataBase import primaryCat
 
+def ModelAnalysis(model):
+	print "Training Models..."
+	model.fit(dfTrain.ix[:,explanatoryVariables],dfTrain[varPredicted])
+	print "Predicting Results..."
+	pred = model.predict(dfTest.ix[:,explanatoryVariables])
+	print "Computing the ROC curve..."
+	probas = model.predict_proba(dfTest.ix[:,explanatoryVariables])
+	fpr, tpr, thresholds = roc_curve(dfTest[varPredicted], probas[:, 1])
+	roc_auc = auc(fpr, tpr)
+	print "Area under the ROC curve ("+str(model)+") : " + str(roc_auc)
+	return 
+
+
+
 if __name__ == "__main__" :
 	con = sqlite3.connect('../FinalDataBase.db3')
 	#~ commandGen = """CREATE INDEX indDate ON DbSql(date);"""
@@ -47,6 +61,7 @@ if __name__ == "__main__" :
 		variablesKept = explanatoryVariables+[varPredicted]
 		dfTrain.drop([name for name in dfTrain if name not in variablesKept], axis=1, inplace=True)
 		dfTest.drop([name for name in dfTest if name not in variablesKept], axis=1, inplace=True)
+		
 		
 		
 		print "Training Models"
