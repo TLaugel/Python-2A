@@ -1,0 +1,7 @@
+.open "../FinalDataBase.db3" DbSql
+create table DbSql(idCust text, idProd text,date numeric, ratingReview integer, avgRating real, wAvgRating real,  nbReview integer, nbHelpful integer, salesrank integer, catCust1 integer,catCust2 integer,catCust3 integer,catCust4 integer,catCust5 integer,catCust6 integer,catCust7 integer,catCust8 integer,catCust9 integer,catCust10 integer,catCust11 integer,catCust12 integer,catCust13 integer,catCust14 integer);
+.mode csv
+.separator ';'
+.import "../FinalDB.txt" DbSql
+CREATE INDEX indDate ON DbSql(date);
+
