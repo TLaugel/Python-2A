@@ -26,8 +26,11 @@ def constructmodel(explanatoryVariables,varPredicted,train,test,model,name) :
 	true[true == 2] = 1
 	cm2 = confusion_matrix(true, predbis)
 	cm2 = confusion_matrix(dfTest[varPredicted], pred)
-	#~ print type(cm2)
 	np.savetxt("confMat/"+name+".csv", cm2, delimiter=";")
+	
+	cmtrain = confusion_matrix(dfTrain[varPredicted], model.predict(dfTrain.ix[:,explanatoryVariables]))
+	np.savetxt("confMat/"+name+"_train.csv", cmtrain, delimiter=";")
+	
 	
 	pr, tpr, thresholds = roc_curve(true, predProbs[:, 1])
 	#~ pr, tpr, thresholds = roc_curve(dfTest[varPredicted], predProbs[:, 1])
