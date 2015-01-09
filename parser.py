@@ -114,7 +114,7 @@ class MyProduct:
 			line = re.sub(repl,'',file.readline())
 		self.Id  = int(line.split(':')[-1])
 		if self.Id% 10000 == 0 :
-			print self.Id
+			print(self.Id)
 		self.ASIN = re.sub(repl,'',file.readline()).split(':')[-1]
 		found = True
 		self.title,found,line = extract_attrib('title:',file,found,"")

@@ -10,6 +10,10 @@ nameAux = "sortedDataBase.txt"
 nameOut = "sortedDataBaseWithCust.txt.gz"
 
 primaryCat = ['3375251', '283155', '5174', '3489201', '229220', '139452', '1064952', '265523', '171280', '172282', '229534', '540744', '468642', '700060']
+
+283155 = Books
+5174 = Music
+
 dicPrimaryCatSeen_Ref = {}
 if __name__ == "__main__" :
 	import subprocess
